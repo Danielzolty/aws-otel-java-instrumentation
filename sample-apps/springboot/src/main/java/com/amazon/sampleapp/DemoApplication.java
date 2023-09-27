@@ -14,7 +14,7 @@ public class DemoApplication {
 
   @Bean
   public Call.Factory httpClient() {
-    return new OkHttpClient();
+    return (Call.Factory) new OkHttpClient();
   }
 
   @Bean

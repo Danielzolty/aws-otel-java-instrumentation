@@ -29,6 +29,7 @@ dependencies {
   testImplementation("io.opentelemetry.proto:opentelemetry-proto")
   testImplementation("org.curioswitch.curiostack:protobuf-jackson")
   testImplementation("org.slf4j:slf4j-simple")
+  testImplementation("org.slf4j:log4j-over-slf4j:1.7.13")
   testImplementation("org.testcontainers:junit-jupiter")
 }
 
@@ -57,6 +58,7 @@ tasks {
   named("jibDockerBuildAll") {
     // Make sure that images used during tests are available locally.
     dependsOn(":sample-apps:spark:jibDockerBuild")
+    dependsOn(":sample-apps:spark-log4j1:jibDockerBuild")
     dependsOn(":sample-apps:springboot:jibDockerBuild")
     dependsOn(":smoke-tests:spring-boot:jibDockerBuild")
     dependsOn(":smoke-tests:fakebackend:jibDockerBuild")

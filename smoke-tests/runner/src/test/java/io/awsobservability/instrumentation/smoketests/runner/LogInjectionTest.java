@@ -33,6 +33,7 @@ import org.testcontainers.utility.MountableFile;
 class LogInjectionTest {
 
   private static final ToStringConsumer log4jString = new ToStringConsumer();
+  private static final ToStringConsumer log4j1String = new ToStringConsumer();
   private static final ToStringConsumer logbackString = new ToStringConsumer();
 
   private static final String AGENT_PATH =
@@ -48,9 +49,23 @@ class LogInjectionTest {
           .withCopyFileToContainer(
               MountableFile.forHostPath(AGENT_PATH), "/opentelemetry-javaagent-all.jar")
           .withEnv("JAVA_TOOL_OPTIONS", "-javaagent:/opentelemetry-javaagent-all.jar")
-          .withEnv("OTEL_JAVAAGENT_DEBUG", "true")
+          //.withEnv("OTEL_JAVAAGENT_DEBUG", "true")
           .withEnv("AWS_REGION", "us-west-2")
           .withEnv("LISTEN_ADDRESS", "0.0.0.0:4567");
+
+  @Container
+  private static final GenericContainer<?> log4j1App =
+      new GenericContainer<>("public.ecr.aws/aws-otel-test/aws-otel-java-spark-log4j1:latest")
+          .withExposedPorts(1234)
+          .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("log4j1")))
+          .withLogConsumer(log4j1String)
+          .waitingFor(Wait.forLogMessage(".*Started running application.*", 1))
+          .withCopyFileToContainer(
+              MountableFile.forHostPath(AGENT_PATH), "/opentelemetry-javaagent-all.jar")
+          .withEnv("JAVA_TOOL_OPTIONS", "-javaagent:/opentelemetry-javaagent-all.jar")
+          // .withEnv("OTEL_JAVAAGENT_DEBUG", "true")
+          .withEnv("AWS_REGION", "us-west-2")
+          .withEnv("LISTEN_ADDRESS", "0.0.0.0:1234");
 
   @Container
   private static final GenericContainer<?> logbackApp =
@@ -62,7 +77,7 @@ class LogInjectionTest {
           .withCopyFileToContainer(
               MountableFile.forHostPath(AGENT_PATH), "/opentelemetry-javaagent-all.jar")
           .withEnv("JAVA_TOOL_OPTIONS", "-javaagent:/opentelemetry-javaagent-all.jar")
-          .withEnv("OTEL_JAVAAGENT_DEBUG", "true")
+          //.withEnv("OTEL_JAVAAGENT_DEBUG", "true")
           .withEnv("AWS_REGION", "us-west-2")
           .withEnv("LISTEN_ADDRESS", "0.0.0.0:8080");
 
@@ -76,6 +91,20 @@ class LogInjectionTest {
         .join();
     // Log message has X-Ray trace ID.
     assertThat(log4jString.toUtf8String())
+        .matches(
+            Pattern.compile(
+                ".*1-[0-9a-f]{8}-[0-9a-f]{24}@[0-9a-f]{16} INFO  Executing outgoing-http-call.*",
+                Pattern.DOTALL));
+  }
+
+  @Test
+  void log41j() {
+    WebClient.of("http://localhost:" + log4j1App.getMappedPort(1234))
+        .get("/outgoing-http-call")
+        .aggregate()
+        .join();
+    // Log message has X-Ray trace ID.
+    assertThat(log4j1String.toUtf8String())
         .matches(
             Pattern.compile(
                 ".*1-[0-9a-f]{8}-[0-9a-f]{24}@[0-9a-f]{16} INFO  Executing outgoing-http-call.*",

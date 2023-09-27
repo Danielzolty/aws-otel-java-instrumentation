@@ -26,4 +26,5 @@ dependencies {
   compileOnly("net.bytebuddy:byte-buddy")
 
   compileOnly("org.apache.logging.log4j:log4j-core:2.20.0")
+  compileOnly("log4j:log4j:1.2.17")
 }

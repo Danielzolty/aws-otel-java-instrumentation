@@ -57,7 +57,7 @@ public class AwsXrayLoggingEventInstrumentation implements TypeInstrumentation {
             .and(isPublic())
             .and(named("getMDCPropertyMap").or(named("getMdc")))
             .and(takesArguments(0)),
-        AwsXrayLoggingEventInstrumentation.class.getName() + "$GetMdcAdvice");
+        AwsXrayLogbackInstrumentationModule.class.getName() + "$GetMdcAdvice");
   }
 
   public static class GetMdcAdvice {
@@ -71,6 +71,7 @@ public class AwsXrayLoggingEventInstrumentation implements TypeInstrumentation {
       }
 
       Context context = VirtualField.find(ILoggingEvent.class, Context.class).get(event);
+      System.out.println("It is able to find the VirtualField");
       if (context == null) {
         return;
       }

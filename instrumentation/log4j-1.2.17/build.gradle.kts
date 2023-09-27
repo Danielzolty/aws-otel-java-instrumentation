@@ -18,14 +18,17 @@ plugins {
   id("com.github.johnrengelman.shadow")
 }
 
-base.archivesBaseName = "aws-instrumentation-logback-1.0"
+repositories {
+  mavenCentral()
+}
+
+base.archivesBaseName = "aws-instrumentation-log4j-1.2.17"
 
 dependencies {
   compileOnly("io.opentelemetry:opentelemetry-api")
-  compileOnly("io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0")
+  compileOnly("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api")
+  compileOnly("io.opentelemetry.javaagent.instrumentation:opentelemetry-javaagent-log4j-mdc-1.2:1.30.0-alpha")
   compileOnly("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
   compileOnly("net.bytebuddy:byte-buddy")
-
-  compileOnly("ch.qos.logback:logback-classic:1.4.8")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
+  compileOnly("log4j:log4j:1.2.4")
 }

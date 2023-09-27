@@ -10,12 +10,12 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import software.amazon.awssdk.services.s3.S3Client;
 
 public class App {
-  private static final Logger logger = LogManager.getLogger();
+  private static final Logger logger = LogManager.getLogger(App.class);
   private static final boolean shouldSampleAppLog =
       System.getenv().getOrDefault("SAMPLE_APP_LOG_LEVEL", "INFO").equals("INFO");
 
@@ -35,8 +35,8 @@ public class App {
     String listenAddress = System.getenv("LISTEN_ADDRESS");
 
     if (listenAddress == null) {
-      host = "127.0.0.1";
-      port = "4567";
+      host = "0.0.0.0";
+      port = "1234";
     } else {
       String[] splitAddress = listenAddress.split(":");
       host = splitAddress[0];
@@ -65,7 +65,6 @@ public class App {
               httpClient
                   .newCall(new Request.Builder().url("https://aws.amazon.com").build())
                   .execute()) {
-            logger.info("Executed outgoing-http-call");
           } catch (IOException e) {
             throw new UncheckedIOException("Could not fetch endpoint", e);
           }
@@ -119,6 +118,7 @@ public class App {
           // Handle the exception here
           exception.printStackTrace();
         });
+    logger.info("Started running application");
   }
 
   // get x-ray trace id
