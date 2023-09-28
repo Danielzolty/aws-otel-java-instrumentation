@@ -24,12 +24,23 @@ dependencies {
   // implementation("org.apache.logging.log4j:log4j-core")
   implementation("software.amazon.awssdk:s3")
   implementation("software.amazon.awssdk:sts")
+//  implementation("org.slf4j:slf4j-api")
+//  implementation("org.slf4j:slf4j-simple")
 
   // runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
 }
 
 application {
   mainClass.set("com.amazon.sampleapp.App")
+}
+
+configurations {
+  // In order to test the real log4j library we need to remove the log4j transitive
+  // dependency 'log4j-over-slf4j' brought in by :testing-common which would shadow
+  // the log4j module under test using a proxy to slf4j instead.
+  testImplementation {
+    exclude("org.slf4j", "log4j-over-slf4j")
+  }
 }
 
 jib {

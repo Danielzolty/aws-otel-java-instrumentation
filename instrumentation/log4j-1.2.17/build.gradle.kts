@@ -31,4 +31,6 @@ dependencies {
   compileOnly("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
   compileOnly("net.bytebuddy:byte-buddy")
   compileOnly("log4j:log4j:1.2.4")
+  runtimeOnly("org.slf4j:slf4j-api")
+  runtimeOnly("org.slf4j:slf4j-simple")
 }

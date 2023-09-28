@@ -28,6 +28,9 @@ public class AwsXrayLog4j1InstrumentationModule extends InstrumentationModule {
 
   @Override
   public List<TypeInstrumentation> typeInstrumentations() {
+    System.out.println("---------------------------------------\n");
+    System.out.println("Log4j1 Type Instrumentation\n");
+    System.out.println("---------------------------------------");
     return Collections.singletonList(new AwsXrayLog4j1EventInstrumentation());
   }
 }

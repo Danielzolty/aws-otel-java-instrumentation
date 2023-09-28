@@ -21,22 +21,20 @@ import io.opentelemetry.instrumentation.api.util.VirtualField;
 import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner.Typing;
 import net.bytebuddy.matcher.ElementMatcher;
-// import org.apache.log4j.LogManager;
-// import org.apache.log4j.Logger;
+import static net.bytebuddy.matcher.ElementMatchers.isMethod;
+import static net.bytebuddy.matcher.ElementMatchers.isPublic;
+import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
+import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 import org.apache.log4j.spi.LoggingEvent;
 
-import static net.bytebuddy.matcher.ElementMatchers.*;
 
 public class AwsXrayLog4j1EventInstrumentation implements TypeInstrumentation {
   private static final String TRACE_ID_KEY = "AWS-XRAY-TRACE-ID";
-  private static final Logger logger = Logger.getLogger("log4j1");
 
   @Override
   public ElementMatcher<TypeDescription> typeMatcher() {
@@ -45,7 +43,6 @@ public class AwsXrayLog4j1EventInstrumentation implements TypeInstrumentation {
 
   @Override
   public void transform(TypeTransformer transformer) {
-    System.out.println("Transformer being called");
     transformer.applyAdviceToMethod(
             isMethod()
                     .and(isPublic())
@@ -63,37 +60,17 @@ public class AwsXrayLog4j1EventInstrumentation implements TypeInstrumentation {
             @Advice.This LoggingEvent event,
             @Advice.Argument(0) String key,
             @Advice.Return(readOnly = false) Object value) {
-//      System.out.println("On Exit being called");
-//      return;
       if (TRACE_ID_KEY.equals(key)) {
         if (value != null) {
           // Assume already instrumented event if traceId/spanId/sampled is present.
           return;
         }
-//        value = event.toString();
-        VirtualField context = VirtualField.find(LoggingEvent.class, Context.class);
-        value = "123" + event.toString();
-//        try {
-//          Context context = VirtualField.find(LoggingEvent.class, Context.class).get(event);
-//          value = context;
-//          if (context == null || context.toString().isEmpty()) {
-//            value = "1-2-3-45";
-//            return;
-//          }
-//          if (context != null) {
-//            value = "999999";
-//            return;
-//          }
-//          if(event.toString().isEmpty()){
-//            value = "batman";
-//            return;
-//          }
-////          value = event.toString();
-//        } catch(Exception e){
-//          value = e.toString();
-//        } finally {
-//          value = event.toString();
+        value = "1234";
+//        Context context = VirtualField.find(LoggingEvent.class, Context.class).get(event);
+//        if (context == null) {
+//          return;
 //        }
+//
 //
 //        SpanContext spanContext = Java8BytecodeBridge.spanFromContext(context).getSpanContext();
 //

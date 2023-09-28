@@ -27,5 +27,5 @@ dependencies {
   compileOnly("net.bytebuddy:byte-buddy")
 
   compileOnly("ch.qos.logback:logback-classic:1.4.8")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
+//  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
 }

@@ -17,10 +17,7 @@ package software.amazon.opentelemetry.javaagent.instrumentation.logback_1_0;
 
 import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.hasClassesNamed;
 import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.implementsInterface;
-import static net.bytebuddy.matcher.ElementMatchers.isMethod;
-import static net.bytebuddy.matcher.ElementMatchers.isPublic;
-import static net.bytebuddy.matcher.ElementMatchers.named;
-import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import io.opentelemetry.api.trace.SpanContext;
@@ -53,11 +50,11 @@ public class AwsXrayLoggingEventInstrumentation implements TypeInstrumentation {
   @Override
   public void transform(TypeTransformer transformer) {
     transformer.applyAdviceToMethod(
-        isMethod()
-            .and(isPublic())
-            .and(named("getMDCPropertyMap").or(named("getMdc")))
-            .and(takesArguments(0)),
-        AwsXrayLogbackInstrumentationModule.class.getName() + "$GetMdcAdvice");
+            isMethod()
+                    .and(isPublic())
+                    .and(namedOneOf("getMDCPropertyMap", "getMdc"))
+                    .and(takesArguments(0)),
+        AwsXrayLoggingEventInstrumentation.class.getName() + "$GetMdcAdvice");
   }
 
   public static class GetMdcAdvice {
@@ -71,7 +68,6 @@ public class AwsXrayLoggingEventInstrumentation implements TypeInstrumentation {
       }
 
       Context context = VirtualField.find(ILoggingEvent.class, Context.class).get(event);
-      System.out.println("It is able to find the VirtualField");
       if (context == null) {
         return;
       }
